@@ -1,0 +1,38 @@
+# Build artifacts
+build/
+
+# Output and logs
+output/
+logs/
+
+# Generated data
+/data/
+
+# Configuration files
+config/
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Ignore executables and object files
+*.out
+*.o
+*.obj
+*.exe
+*.a
+*.so
+*.dll
+
+# Ignore test binaries
+StablecoinStabilityTracker/tests/*.out
+StablecoinStabilityTracker/tests/*.o

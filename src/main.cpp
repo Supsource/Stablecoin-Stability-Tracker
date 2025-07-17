@@ -196,8 +196,14 @@ int main(int argc, char* argv[]) {
     std::vector<AnalysisResult> results;
     bool forced_pattern_match = false;
     auto start_time = std::chrono::steady_clock::now();
+    // parallelize the analysis for each stablecoin
+    // this will be responisable for better performace impact.  TODO ---> wil add redis later
+    std::vector<std::future<AnalysisResult>> futures;
     for (const auto& coin : stablecoins) {
-        results.push_back(analyzeStablecoin(coin, config, symbolToId, perfLogger, test_mode, forced_pattern_match));
+        futures.push_back(std::async(std::launch::async, analyzeStablecoin, coin, std::cref(config), std::cref(symbolToId), std::ref(perfLogger), test_mode, std::ref(forced_pattern_match)));
+    }
+    for (auto& fut : futures) {
+        results.push_back(fut.get());
     }
     // Summary JSON
     double avg_risk = 0.0;

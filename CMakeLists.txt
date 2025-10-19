@@ -41,8 +41,9 @@ add_library(analytics
     src/analytics/historical_pattern_engine.cpp
     src/analytics/onchain_flow_analyzer.cpp
     src/analytics/pattern_engine.cpp
-    include/data/historical_pattern_engine.hpp
-    include/data/onchain_flow_analyzer.hpp
+    include/analytics/historical_pattern_engine.hpp
+    include/analytics/onchain_flow_analyzer.hpp
+    include/analytics/pattern_engine.h
 )
 target_include_directories(analytics PUBLIC include)
 
@@ -52,8 +53,8 @@ target_link_libraries(analytics core)
 add_library(prediction_engine
     src/prediction_engine/model_interface.cpp
     src/prediction_engine/risk_scorer.cpp
-    include/data/model_interface.hpp
-    include/data/risk_scorer.hpp
+    include/prediction_engine/model_interface.hpp
+    include/prediction_engine/risk_scorer.hpp
 )
 target_include_directories(prediction_engine PUBLIC include)
 
@@ -63,8 +64,8 @@ target_link_libraries(prediction_engine core)
 add_library(alerting
     src/alerting/threshold_watcher.cpp
     src/alerting/notification_dispatcher.cpp
-    include/data/threshold_watcher.hpp
-    include/data/notification_dispatcher.hpp
+    include/alerting/threshold_watcher.hpp
+    include/alerting/notification_dispatcher.hpp
 )
 target_include_directories(alerting PUBLIC include)
 
@@ -87,6 +88,7 @@ target_link_libraries(utils core)
 # Monitoring library
 add_library(monitoring
     src/monitoring/alert_router.cpp
+    include/monitoring/alert_router.h
 )
 target_include_directories(monitoring PUBLIC include)
 target_link_libraries(monitoring core)
@@ -94,17 +96,17 @@ target_link_libraries(monitoring core)
 # Main executable
 add_executable(StablecoinStabilityTracker src/main.cpp)
 target_link_libraries(StablecoinStabilityTracker
-    core data_ingestion analytics prediction_engine alerting utils monitoring
+    data_ingestion analytics prediction_engine alerting utils monitoring
 )
 
 # Tests
 enable_testing()
 add_executable(test_data_normalizer StablecoinStabilityTracker/tests/test_data_normalizer.cpp)
-target_link_libraries(test_data_normalizer core data_ingestion analytics prediction_engine alerting utils)
+target_link_libraries(test_data_normalizer data_ingestion)
 add_test(NAME TestDataNormalizer COMMAND test_data_normalizer)
 
 add_executable(test_pattern_matcher StablecoinStabilityTracker/tests/test_main.cpp)
-target_link_libraries(test_pattern_matcher core data_ingestion analytics prediction_engine alerting utils)
+target_link_libraries(test_pattern_matcher analytics)
 add_test(NAME TestPatternMatcher COMMAND test_pattern_matcher)
 
 add_executable(test_risk_scorer tests/test_risk_scorer.cpp)

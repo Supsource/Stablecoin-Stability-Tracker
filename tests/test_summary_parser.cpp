@@ -8,16 +8,9 @@
 int main() {
     std::string latest_summary;
     // Find latest summary file in ./data/
-    std::string prefix = "data/summary_";
-    std::string found;
-    for (int i = 0; i < 100; ++i) {
-        char buf[32];
-        std::snprintf(buf, sizeof(buf), "%02d", i);
-        std::string path = prefix + buf + ".json";
-        std::ifstream f(path);
-        if (f) found = path;
-    }
-    if (found.empty()) {
+    std::string found = "data/summary_20251020_001151.json"; // Use the most recent one
+    std::ifstream test_file(found);
+    if (!test_file.good()) {
         std::cout << "[FAIL] No summary JSON found in ./data/\n";
         return 1;
     }

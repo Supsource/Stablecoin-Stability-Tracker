@@ -1,6 +1,6 @@
 ## Introduction
 
-**StablecoinStabilityTracker** is a high-performance C++ application designed to monitor major stablecoins (USDT, DAI, USDC), analyze multiple risk signals (volatility, on-chain metrics, sentiment, TVL), and detect potential depeg events in real-time. The system fetches data from REST and WebSocket APIs, applies historical pattern matching, computes a composite risk score, and issues alerts when predefined thresholds are crossed.
+**Stablecoin Stability Tracker** is a high-performance C++ application designed to monitor major stablecoins (USDT, DAI, USDC), analyze multiple risk signals (volatility, on-chain metrics, sentiment, TVL), and detect potential depeg events in real-time. The system fetches data from REST and WebSocket APIs, applies historical pattern matching, computes a composite risk score, and issues alerts when predefined thresholds are crossed.
 
 ## Features
 

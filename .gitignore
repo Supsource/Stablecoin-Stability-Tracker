@@ -9,8 +9,8 @@ logs/
 /data/
 .cache
 
-# Configuration files
-config/
+# Secrets only — keep example configs in the repo
+config/settings.cfg
 
 # CMake files
 CMakeFiles/

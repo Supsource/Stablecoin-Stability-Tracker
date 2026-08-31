@@ -8,6 +8,7 @@ namespace stablecoin_tracker {
 class PerfLogger {
 public:
     PerfLogger(const std::string& perf_csv, const std::string& alerts_json);
+    ~PerfLogger();
     void logPerformance(const std::string& coin, double fetch_time, double risk_time, double alert_time, double total_time);
     void logAlert(const nlohmann::json& alert_obj);
 private:
@@ -15,5 +16,6 @@ private:
     std::ofstream perf_csv_;
     std::ofstream alerts_json_;
     bool first_alert_ = true;
+    bool alerts_opened_ = false;
 };
-} 
+}

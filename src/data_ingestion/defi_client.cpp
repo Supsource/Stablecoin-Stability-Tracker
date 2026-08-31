@@ -2,9 +2,9 @@
 #include <iostream>
 
 namespace stablecoin_tracker {
-double fetchTVL(const std::string& coinGeckoId) {
-    // TODO: Integrate real Aave/Uniswap API.
-    std::cout << "[INFO] Fetching TVL for " << coinGeckoId << "\n";
-    return 50000000.0; // Mock: $50M TVL
+TvlFetch fetchTVL(const std::string& coinGeckoId) {
+    std::cout << "[INFO] [MOCK] TVL for " << coinGeckoId
+              << " is a placeholder ($50M). Wire Aave/Uniswap to replace this.\n";
+    return {50000000.0, true};
 }
-} 
+}

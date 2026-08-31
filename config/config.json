@@ -1,0 +1,19 @@
+{
+  "stablecoins": ["USDT", "USDC", "DAI"],
+  "alert_thresholds": {
+    "USDT": 0.5,
+    "USDC": 0.5,
+    "DAI": 0.5
+  },
+  "historical_window_days": 7,
+  "target_price": 1.0,
+  "depeg_threshold": 0.02,
+  "enabled_data_sources": ["price", "onchain", "sentiment", "tvl"],
+  "risk_weights": {
+    "peg_deviation": 0.25,
+    "volatility": 0.25,
+    "onchain": 0.20,
+    "sentiment": 0.15,
+    "tvl": 0.15
+  }
+}

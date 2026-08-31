@@ -2,5 +2,9 @@
 #include <string>
 
 namespace stablecoin_tracker {
-double fetchTVL(const std::string& coinGeckoId);
-} 
+struct TvlFetch {
+    double tvl = 0.0;
+    bool is_mock = true;
+};
+TvlFetch fetchTVL(const std::string& coinGeckoId);
+}

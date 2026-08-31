@@ -12,6 +12,7 @@ public:
     void AddPriceData(const std::string& symbol, const std::vector<double>& prices);
     std::vector<int> DetectDepegEvents(const std::string& symbol, double target_price, double threshold);
     double CalculateVolatility(const std::string& symbol);
+    double CalculatePegDeviation(const std::string& symbol, double target_price = 1.0);
     void SetHistoricalWindowDays(int days); // Set window in days
 private:
     int historical_window_days_ = 30;

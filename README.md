@@ -1,160 +1,102 @@
 ## Introduction
 
-**Stablecoin Stability Tracker** is a high-performance C++ application designed to monitor major stablecoins (USDT, DAI, USDC), analyze multiple risk signals (volatility, on-chain metrics, sentiment, TVL), and detect potential depeg events in real-time. The system fetches data from REST and WebSocket APIs, applies historical pattern matching, computes a composite risk score, and issues alerts when predefined thresholds are crossed.
+**Stablecoin Stability Tracker** is a C++17 application that monitors major stablecoins (USDT, DAI, USDC), analyzes risk signals (peg deviation, volatility, on-chain metrics, sentiment, TVL), and flags potential depeg events. It fetches prices from CoinGecko and optional on-chain data from Etherscan, computes a composite risk score, and writes alerts and reports.
 
 ## Features
 
-* **Real-time data ingestion** from multiple sources (CoinGecko, Etherscan, custom sentiment API)
-* **Asynchronous fetchers** for low-latency performance
-* **Historical pattern matching** against known depeg events
-* **Composite risk scoring** using weighted signals
-* **Configurable thresholds** and confidence levels
-* **Structured logging** and persistent output to JSON, CSV, and text files
+* Historical price ingestion from CoinGecko (cached, rate-limited)
+* Optional Etherscan token-transfer metrics (correct per-token decimals)
+* Peg deviation and log-return volatility
+* Historical depeg pattern matching (cosine similarity)
+* Configurable thresholds, weights, and confidence labels
+* JSON, CSV, and text reports
+
+Sentiment and DeFi TVL are **mocked** until real APIs are wired; the UI labels them as `[MOCK]`.
 
 ## Prerequisites
 
-* C++17 compatible compiler (e.g., GCC 9+, Clang 10+)
-* CMake 3.15 or higher
-* Internet access for API calls
-* Optional: Redis or Kafka for future scaling (not required out-of-the-box)
+* C++17 compiler (GCC 9+, Clang 10+, Apple Clang)
+* CMake 3.14 or higher
+* libcurl
+* Internet access for live API calls (tests do not require it)
 
 ## Installation
 
-1. **Create build directory**
-
-   ```bash
-   mkdir build && cd build
-   ```
-2. **Configure and build**
-
-   ```bash
-   cmake ..
-   make -j$(nproc)
-   ```
-3. **Or**
-    ```bash
-    ./build/StablecoinStabilityTracker
-    ```
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build .
+```
 
 ## Configuration
 
-Configuration files are located in the `config/` directory:
+Copy the examples if you want a local override:
 
-* **config.json**: API keys, endpoints, and global settings
-* **setting.cfg**: Threshold values for risk alerts, confidence levels, and logging preferences
+* `config/config.json` — coins, thresholds, window, risk weights (committed sample works out of the box)
+* `config/settings.cfg.example` — copy to `config/settings.cfg` and add an Etherscan key, or set `ETHERSCAN_API_KEY`
 
 Example `config.json`:
 
 ```json
 {
-  "coingecko_api": "https://api.coingecko.com/api/v3",
-  "etherscan_api_key": "YOUR_KEY",
-  "sentiment_endpoint": "https://api.sentiment.io/v1/score",
-  "analysis_window_days": 30
+  "stablecoins": ["USDT", "USDC", "DAI"],
+  "alert_thresholds": {
+    "USDT": 0.5,
+    "USDC": 0.5,
+    "DAI": 0.5
+  },
+  "historical_window_days": 7,
+  "target_price": 1.0,
+  "depeg_threshold": 0.02,
+  "enabled_data_sources": ["price", "onchain", "sentiment", "tvl"],
+  "risk_weights": {
+    "peg_deviation": 0.25,
+    "volatility": 0.25,
+    "onchain": 0.20,
+    "sentiment": 0.15,
+    "tvl": 0.15
+  }
 }
 ```
 
 ## Project Structure
 
 ```
-StablecoinStabilityTracker/
-├── build/                    # Compiled binaries
+.
 ├── config/
 │   ├── config.json
-│   └── setting.cfg
-├── data/
-│   ├── history/              # Historical JSON data per coin
-│   └── final_report.txt      # Summary report
-├── include/                  # Header files
-│   ├── alerting/
-│   ├── analytics/
-│   ├── core/
-│   ├── data/
-│   ├── monitoring/
-│   ├── prediction_engine/
-│   ├── third_party/
-│   └── utils/
-├── logs/                     # Application logs
-│   └── alerts.log
-├── output/                   # Generated alerts and performance CSV
-│   ├── alerts.json
-│   └── performance.csv
-├── src/                      # Source code
-│   ├── alerting/
-│   ├── analytics/
-│   ├── core/
-│   ├── data_ingestion/
-│   ├── monitoring/
-│   ├── prediction_engine/
-│   ├── utils/
+│   ├── config.json.example
+│   └── settings.cfg.example
+├── include/
+├── src/
 │   └── main.cpp
-├── tests/                    # Unit tests
+├── tests/
 ├── CMakeLists.txt
-└── README.md                 # This documentation
+└── README.md
 ```
 
-## Module Descriptions
+Runtime output (gitignored): `data/`, `logs/`, `output/`, `.cache/`.
 
-### Data Ingestion
+## Running
 
-* **api\_client.hpp/cpp**: Base class for REST clients
-* **coingecko\_client**: Fetches historical and current prices
-* **defi\_client** (etherscan\_client, sentiment\_client, websocket\_handler): Fetches on-chain metrics, sentiment scores, and live ticks
-* **data\_normalizer**: Standardizes data formats across sources
-
-### Analytics
-
-* **pattern\_engine**: Implements historical depeg pattern matching
-* **pattern\_matcher**: Searches for event signatures in time series data
-
-### Prediction Engine
-
-* **risk\_scorer**: Computes weighted risk score from volatility, on-chain, sentiment, TVL
-* **model\_interface**: Defines the scoring algorithm
-
-### Alerting
-
-* **threshold\_watcher**: Compares risk score against configured thresholds
-* **notification\_dispatcher**: Logs or sends alerts when a depeg risk is detected
-
-### Core & Utilities
-
-* **config\_manager**: Loads and validates configuration files
-* **thread\_pool**: Manages asynchronous tasks
-* **logger & perf\_logger**: Structured and performance logging
-* **time\_series**: Data structures for time-indexed price points
-
-### Monitoring
-
-* **alert\_router**: Routes alerts to different outputs (JSON, logs)
-
-## Running the Project
-
-From the `build/` directory, run:
+From the repo root (after building):
 
 ```bash
-./StablecoinStabilityTracker
-```
-
-You should see output similar to:
-
-```
-=== Stablecoin Stability Tracker (Configurable) ===
-[INFO] -------- Analyzing USDT --------
-[INFO] ...
-[FINAL REPORT] Written to ./data/final_report.txt
+./build/StablecoinStabilityTracker
+./build/StablecoinStabilityTracker --test-mode
 ```
 
 ## Logging & Output
 
-* **logs/alerts.log**: Rolling log of alerts and analysis steps
-* **output/alerts.json**: JSON-formatted alerts with timestamp and risk details
-* **output/performance.csv**: Aggregated metrics for backtesting and performance analysis
-* **data/final\_report.txt**: Human-readable summary of the latest analysis run
+* **logs/alerts.log**: Alerts with the actual risk drivers
+* **output/alerts.json**: JSON array of alerts
+* **output/performance.csv**: Per-coin timing
+* **data/final_report.txt**: Human-readable summary
+* **data/history/**: Per-coin JSON with risk components
 
 ## Testing
 
-Unit tests are implemented using GoogleTest. To run tests:
+Tests are standalone C++ executables registered with CTest (no GoogleTest).
 
 ```bash
 cd build
@@ -163,8 +105,7 @@ ctest --output-on-failure
 
 ## Future Improvements
 
-* Integrate Redis or Kafka for scalable ingestion
-* Add real-time dashboard with Grafana
-* Support additional stablecoins and on-chain signals
-* Implement email/Slack notifications
-* Enhance error handling and retry logic
+* Real sentiment and TVL APIs
+* Redis or Kafka for scalable ingestion
+* Email/Slack notifications
+* Dashboard

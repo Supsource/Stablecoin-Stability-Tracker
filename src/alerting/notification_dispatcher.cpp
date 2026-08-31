@@ -5,9 +5,10 @@ namespace stablecoin_tracker {
 NotificationDispatcher::NotificationDispatcher() {}
 
 void NotificationDispatcher::DispatchAlerts(const std::vector<RiskAssessment>& alerts) {
-    //   dispatching alerts as JSON
     for (const auto& a : alerts) {
-        std::cout << "Dispatching alert: { \"risk_score\": " << a.risk_score << " }\n";
+        std::cout << "Dispatching alert: { \"symbol\": \"" << a.symbol
+                  << "\", \"risk_score\": " << a.risk_score
+                  << ", \"reason\": \"" << a.reasoning << "\" }\n";
     }
 }
 }

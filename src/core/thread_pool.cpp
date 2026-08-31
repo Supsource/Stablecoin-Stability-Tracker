@@ -1,6 +1,4 @@
 #include "../../include/core/thread_pool.hpp"
-#include "../../include/utils/logger.hpp"
-#include <iostream>
 
 namespace stablecoin_tracker {
 ThreadPool::ThreadPool(size_t num_threads) : stop_(false) {
@@ -20,13 +18,14 @@ ThreadPool::~ThreadPool() {
 void ThreadPool::Enqueue(std::function<void()> task) {
     {
         std::unique_lock<std::mutex> lock(queue_mutex_);
-        tasks_.push(task);
+        if (stop_) return;
+        tasks_.push(std::move(task));
     }
     condition_.notify_one();
 }
 
 void ThreadPool::Worker() {
-    while (!stop_) {
+    for (;;) {
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);
@@ -38,4 +37,4 @@ void ThreadPool::Worker() {
         task();
     }
 }
-} 
+}

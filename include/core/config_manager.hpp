@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include "../third_party/json.hpp"
+#include "types.hpp"
 
 namespace stablecoin_tracker {
 class ConfigManager {
@@ -17,9 +18,13 @@ public:
     std::vector<std::string> getOnchainMetrics() const;
     std::vector<std::string> getMarketMetrics() const;
     std::string getEtherscanApiKey() const;
+    double getTargetPrice() const;
+    double getDepegThreshold() const;
+    RiskWeights getRiskWeights() const;
 private:
     std::string config_path_;
     nlohmann::json config_json_;
     std::set<std::string> enabled_sources_;
+    bool ingestLoadedJson();
 };
-} 
+}
